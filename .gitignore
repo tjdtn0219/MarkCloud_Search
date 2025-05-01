@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# VSCode or IDE configs (optional but recommended)
+.vscode/
+.idea/
+
+# OS-specific
+.DS_Store
+
+# Docker volumes (optional)
+*.log
