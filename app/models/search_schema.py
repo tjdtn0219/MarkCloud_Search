@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import date
 
 
@@ -11,3 +11,16 @@ class SearchRequest(BaseModel):
     )
     registrationDateFrom: Optional[date] = Field(None, description="등록일 시작일")
     registrationDateTo: Optional[date] = Field(None, description="등록일 종료일")
+    page: int = 1
+    size: int = 10
+
+class SearchResult(BaseModel):
+    id: str
+    score: float
+    source: Dict[str, Any]
+
+class PaginatedSearchResponse(BaseModel):
+    total: int
+    page: int
+    size: int
+    results: List[SearchResult]

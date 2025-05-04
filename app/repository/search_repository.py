@@ -13,16 +13,18 @@ class SearchRepository:
         if req.registerStatus:
             must_filters.append({"term": {"registerStatus": req.registerStatus}})
         if req.asignProductMainCodeList:
-            must_filters.append(
-                {"terms": {"asignProductMainCodeList": req.asignProductMainCodeList}}
-            )
+            must_filters.append({
+                "terms": {"asignProductMainCodeList": req.asignProductMainCodeList}
+            })
         if req.registrationDateFrom or req.registrationDateTo:
             date_range = {}
             if req.registrationDateFrom:
                 date_range["gte"] = req.registrationDateFrom
             if req.registrationDateTo:
                 date_range["lte"] = req.registrationDateTo
-            must_filters.append({"range": {"registrationDate": date_range}})
+            must_filters.append({
+                "range": {"registrationDate": date_range}
+            })
 
         query = {
             "query": {
@@ -55,5 +57,13 @@ class SearchRepository:
             }
         }
 
-        res = self.es.search(index=self.index_name, body=query)
-        return res["hits"]["hits"]
+        from_ = (req.page - 1) * req.size
+
+        res = self.es.search(
+            index=self.index_name,
+            body=query,
+            from_=from_,
+            size=req.size
+        )
+
+        return res
