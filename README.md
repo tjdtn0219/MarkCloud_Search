@@ -32,6 +32,12 @@ $ docker-compose up -d
 $ python bulk_upload.py
 ```
 
+```
+# Execute Application
+
+$ uvicorn app.main:app --reload
+```
+
 ## API Document
 
 ### 🔍 POST /api/search
