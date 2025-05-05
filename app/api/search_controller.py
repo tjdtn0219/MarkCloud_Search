@@ -8,6 +8,5 @@ service = SearchService()
 
 
 @router.post("/search", response_model=PaginatedSearchResponse)
-
-def search(req: SearchRequest):
-    return service.search(req)
+async def search(req: SearchRequest):
+    return await service.search(req)

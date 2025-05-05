@@ -4,27 +4,11 @@ from app.core.elastic import get_es_client
 
 class SearchRepository:
     def __init__(self):
-        self.es = get_es_client()
         self.index_name = "products"
 
-    def search(self, req: SearchRequest):
-        must_filters = []
-
-        if req.registerStatus:
-            must_filters.append({"term": {"registerStatus": req.registerStatus}})
-        if req.asignProductMainCodeList:
-            must_filters.append({
-                "terms": {"asignProductMainCodeList": req.asignProductMainCodeList}
-            })
-        if req.registrationDateFrom or req.registrationDateTo:
-            date_range = {}
-            if req.registrationDateFrom:
-                date_range["gte"] = req.registrationDateFrom
-            if req.registrationDateTo:
-                date_range["lte"] = req.registrationDateTo
-            must_filters.append({
-                "range": {"registrationDate": date_range}
-            })
+    async def search(self, req: SearchRequest):
+        es = await get_es_client()
+        must_filters = self.build_must_filters(req)
 
         query = {
             "query": {
@@ -59,11 +43,29 @@ class SearchRepository:
 
         from_ = (req.page - 1) * req.size
 
-        res = self.es.search(
-            index=self.index_name,
-            body=query,
-            from_=from_,
-            size=req.size
+        res = await es.search(
+            index=self.index_name, body=query, from_=from_, size=req.size
         )
 
         return res
+
+    def build_must_filters(self, req: SearchRequest) -> list[dict]:
+        filters = []
+
+        if req.registerStatus:
+            filters.append({"term": {"registerStatus": req.registerStatus}})
+
+        if req.asignProductMainCodeList:
+            filters.append(
+                {"terms": {"asignProductMainCodeList": req.asignProductMainCodeList}}
+            )
+
+        if req.registrationDateFrom or req.registrationDateTo:
+            date_range = {}
+            if req.registrationDateFrom:
+                date_range["gte"] = req.registrationDateFrom
+            if req.registrationDateTo:
+                date_range["lte"] = req.registrationDateTo
+            filters.append({"range": {"registrationDate": date_range}})
+
+        return filters

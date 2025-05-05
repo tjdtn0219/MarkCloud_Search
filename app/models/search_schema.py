@@ -14,10 +14,12 @@ class SearchRequest(BaseModel):
     page: int = 1
     size: int = 10
 
+
 class SearchResult(BaseModel):
     id: str
     score: float
     source: Dict[str, Any]
+
 
 class PaginatedSearchResponse(BaseModel):
     total: int
